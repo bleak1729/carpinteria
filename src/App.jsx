@@ -235,7 +235,7 @@ function LoginScreen({ onLogin }) {
 
 // ─── EMPRESA VIEW ──────────────────────────────────────────────────────────────
 function EmpresaView({ empresa, onUpdate, session }) {
-  const { mobile } = useMedia();
+  const { mobile, tablet } = useMedia();
   const [f, setF]         = useState(empresa || {});
   const [saving, setSaving]   = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -573,7 +573,7 @@ function MatForm({ item, onSave, onClose }) {
       <Field label="Nombre"><input style={SI} value={f.nombre} onChange={e=>up("nombre",e.target.value)} placeholder="ej: MDF 18mm"/></Field>
       <Row cols={mobile?"1fr":"1fr 1fr"}>
         <Field label="Tipo"><select style={SI} value={f.tipo} onChange={e=>up("tipo",e.target.value)}><option value="ml">Metro Lineal (ml)</option><option value="m2">Metro Cuadrado (m2)</option><option value="unidad">Unidad</option></select></Field>
-        <Field label={`Precio por ${f.tipo==="ml"?"ml":f.tipo==="m2"?"m2":"unidad"}`}><input style={SI} type="number" value={f.precio} onChange={e=>up("precio",e.target.value)} placeholder="0"/></Field>
+        <Field label={"Precio por " + (f.tipo==="ml"?"ml":f.tipo==="m2"?"m2":"unidad")}><input style={SI} type="number" value={f.precio} onChange={e=>up("precio",e.target.value)} placeholder="0"/></Field>
       </Row>
       <Field label="Stock"><input style={SI} type="number" value={f.stock} onChange={e=>up("stock",e.target.value)} placeholder="0"/></Field>
       <Field label="Descripción"><textarea style={{...SI,height:68,resize:"none"}} value={f.desc} onChange={e=>up("desc",e.target.value)}/></Field>
@@ -700,9 +700,9 @@ function BudgetForm({ item, projects, materials, clients, onSave, onClose }) {
           <Field label="Personas"><input style={SI} type="number" value={cc.personas} onChange={e=>setCc(p=>({...p,personas:e.target.value}))} placeholder="2"/></Field>
           <Field label="$/día"><input style={SI} type="number" value={cc.mdia} onChange={e=>setCc(p=>({...p,mdia:e.target.value}))} placeholder="3500"/></Field>
         </div>
-        <Prev val={sc} lbl={`${cc.dias}d × ${cc.personas||1}p × ${fmt(cc.mdia)}/día`}/>
+        <Prev val={sc} lbl={cc.dias+"d × "+(cc.personas||1)+"p × "+fmt(cc.mdia)+"/día"}/>
         <button style={{...BP,opacity:sc===0?0.4:1,background:T.green,width:mobile?"100%":"auto",justifyContent:"center"}} onClick={addC} disabled={sc===0}><Plus size={13}/>Agregar</button>
-        {f.colaciones.length>0&&<div style={{marginTop:12}}>{f.colaciones.map(c=><IRow key={c.id} label={c.desc} det={`${c.dias}d × ${c.personas}p × ${fmt(c.mdia)}/día`} val={fmt(c.sub)} onDel={()=>ff("colaciones",f.colaciones.filter(x=>x.id!==c.id))}/>)}<div style={{textAlign:"right",fontSize:13,color:T.muted}}>Subtotal: <strong style={{color:T.text}}>{fmt(totalCol)}</strong></div></div>}
+        {f.colaciones.length>0&&<div style={{marginTop:12}}>{f.colaciones.map(c=><IRow key={c.id} label={c.desc} det={c.dias+"d × "+c.personas+"p × "+fmt(c.mdia)+"/día"} val={fmt(c.sub)} onDel={()=>ff("colaciones",f.colaciones.filter(x=>x.id!==c.id))}/>)}<div style={{textAlign:"right",fontSize:13,color:T.muted}}>Subtotal: <strong style={{color:T.text}}>{fmt(totalCol)}</strong></div></div>}
       </Section>
 
       <Section icon={Fuel} color={T.orange} bg={T.orangeBg} title="Gastos Adicionales" collapsible>
@@ -820,7 +820,7 @@ function Projects({ projs,clis,buds,reload,setModal }) {
       {[["all","Todos",null],...Object.entries(ESTADOS).map(([k,v])=>[k,v.label,v.color])].map(([v,l,dot])=>(<button key={v} onClick={()=>setFt(v)} style={{...BSM,background:ft===v?T.amberBg:T.white,color:ft===v?T.amber:T.muted,border:"1.5px solid "+(ft===v?T.amberMid+"60":T.border)}}>{dot&&<span style={{width:7,height:7,borderRadius:4,background:dot,display:"inline-block"}}/>}{l}</button>))}
     </div>
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
-      {list.map(p=>{const cli=clis.find(c=>c.id===p.cliente_id),bud=buds.find(b=>b.proyecto_id===p.id),est=ESTADOS[p.estado];return(<Card key={p.id} style={{padding:14}}><div style={{display:"flex",gap:12}}><div style={{width:4,alignSelf:"stretch",borderRadius:2,background:est.color,flexShrink:0}}/><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:mobile?"flex-start":"center",gap:8,marginBottom:5,flexDirection:mobile?"column":"row"}}><span style={{fontFamily:"'DM Serif Display',Georgia,serif",fontSize:18,color:T.text}}>{p.nombre}</span><Badge label={est.label} color={est.color} bg={est.bg}/></div><div style={{fontSize:13,color:T.muted,marginBottom:3}}><strong style={{color:T.sub}}>{cli?.nombre||"—"}</strong>{p.entrega&&` · Entrega: ${p.entrega}`}</div>{p.descripcion&&<div style={{fontSize:13,color:T.muted,marginBottom:3}}>{p.descripcion}</div>}{bud&&<div style={{marginTop:8,display:"inline-flex",gap:10,fontSize:12,padding:"5px 10px",background:T.amberBg,borderRadius:7,border:"1px solid "+T.amberMid+"40",flexWrap:"wrap"}}><span style={{color:T.sub}}>Presupuesto: <strong style={{color:T.amber}}>{fmt(bud.total)}</strong></span><Badge label={BESTADOS[bud.estado]?.label||bud.estado} color={BESTADOS[bud.estado]?.color} bg={BESTADOS[bud.estado]?.bg}/></div>}</div><div style={{display:"flex",flexDirection:mobile?"column":"row",gap:5,flexShrink:0}}><button onClick={()=>setModal({t:"proj",d:p})} style={BSM}><Edit2 size={12}/></button><button onClick={()=>del(p.id)} style={{...BSM,color:T.red,border:"1px solid "+T.red+"30",background:T.redBg}}><Trash2 size={12}/></button></div></div></Card>);})}
+      {list.map(p=>{const cli=clis.find(c=>c.id===p.cliente_id),bud=buds.find(b=>b.proyecto_id===p.id),est=ESTADOS[p.estado];return(<Card key={p.id} style={{padding:14}}><div style={{display:"flex",gap:12}}><div style={{width:4,alignSelf:"stretch",borderRadius:2,background:est.color,flexShrink:0}}/><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:mobile?"flex-start":"center",gap:8,marginBottom:5,flexDirection:mobile?"column":"row"}}><span style={{fontFamily:"'DM Serif Display',Georgia,serif",fontSize:18,color:T.text}}>{p.nombre}</span><Badge label={est.label} color={est.color} bg={est.bg}/></div><div style={{fontSize:13,color:T.muted,marginBottom:3}}><strong style={{color:T.sub}}>{cli?.nombre||"—"}</strong>{p.entrega && (" · Entrega: " + p.entrega)}</div>{p.descripcion&&<div style={{fontSize:13,color:T.muted,marginBottom:3}}>{p.descripcion}</div>}{bud&&<div style={{marginTop:8,display:"inline-flex",gap:10,fontSize:12,padding:"5px 10px",background:T.amberBg,borderRadius:7,border:"1px solid "+T.amberMid+"40",flexWrap:"wrap"}}><span style={{color:T.sub}}>Presupuesto: <strong style={{color:T.amber}}>{fmt(bud.total)}</strong></span><Badge label={BESTADOS[bud.estado]?.label||bud.estado} color={BESTADOS[bud.estado]?.color} bg={BESTADOS[bud.estado]?.bg}/></div>}</div><div style={{display:"flex",flexDirection:mobile?"column":"row",gap:5,flexShrink:0}}><button onClick={()=>setModal({t:"proj",d:p})} style={BSM}><Edit2 size={12}/></button><button onClick={()=>del(p.id)} style={{...BSM,color:T.red,border:"1px solid "+T.red+"30",background:T.redBg}}><Trash2 size={12}/></button></div></div></Card>);})}
     </div>
     {list.length===0&&<p style={{textAlign:"center",color:T.muted,padding:40}}>No hay proyectos</p>}
   </div>);
@@ -839,6 +839,7 @@ function Budgets({ buds,projs,clis,mats,empresa,reload,setModal }) {
     </div>
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
       {buds.map(b=>{const pj=projs.find(p=>p.id===b.proyecto_id),cl=pj?clis.find(c=>c.id===pj.cliente_id):null,cfg=BESTADOS[b.estado]||BESTADOS.borrador;const sm=(b.items||[]).reduce((a,i)=>a+i.sub,0),smo=(b.mano_obra||[]).reduce((a,i)=>a+i.sub,0),sc=(b.colaciones||[]).reduce((a,i)=>a+i.sub,0),sg=(b.gastos_extra||[]).reduce((a,g)=>a+g.monto,0);return(<Card key={b.id} style={{padding:14}}><div style={{display:"flex",flexDirection:mobile?"column":"row",gap:12}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5,flexWrap:"wrap"}}><span style={{fontFamily:"'DM Serif Display',Georgia,serif",fontSize:18,color:T.text}}>{pj?.nombre||"Proyecto eliminado"}</span><Badge label={cfg.label} color={cfg.color} bg={cfg.bg}/></div><div style={{fontSize:13,color:T.muted,marginBottom:8}}>{cl?.nombre||"—"} · {b.fecha}</div><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{[[sm,"Materiales",T.amber,T.amberBg],[smo,"M.O.",T.blue,T.blueBg],[sc,"Colac.",T.green,T.greenBg],[sg,"Gastos",T.orange,T.orangeBg]].filter(([v])=>v>0).map(([v,l,c,bg])=>(<span key={l} style={{fontSize:12,padding:"3px 9px",borderRadius:20,background:bg,color:c,fontWeight:600,border:"1px solid "+c+"25"}}>{l}: {fmt(v)}</span>))}</div></div><div style={{display:"flex",flexDirection:mobile?"row":"column",alignItems:mobile?"center":"flex-end",justifyContent:"space-between",gap:8,flexShrink:0}}><div style={{fontFamily:"'DM Serif Display',Georgia,serif",fontSize:mobile?22:26,color:T.amber}}>{fmt(b.total||0)}</div><div style={{display:"flex",gap:6}}><button onClick={()=>doExport(b)} disabled={!!exp} style={{...BP,padding:"7px 12px",fontSize:12,opacity:exp===b.id?0.6:1,background:T.green}}>{exp===b.id?"...":(<><Download size={12}/>{!mobile&&" PDF"}</>)}</button><button onClick={()=>setModal({t:"bud",d:b})} style={BSM}><Edit2 size={12}/></button><button onClick={()=>del(b.id)} style={{...BSM,color:T.red,border:"1px solid "+T.red+"30",background:T.redBg}}><Trash2 size={12}/></button></div></div></div></Card>);})}
+    </div>
   </div>);
 }
 
@@ -924,7 +925,6 @@ export default function App() {
 
   if (loading) return (
     <div style={{ background:T.bg, height:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif", gap:12 }}>
-      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
       <RefreshCw size={28} color={T.amber} style={{ animation:"spin 1s linear infinite" }}/>
       <p style={{ color:T.muted, fontSize:14 }}>Conectando...</p>
     </div>
@@ -948,18 +948,20 @@ export default function App() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
-        ::-webkit-scrollbar{width:5px;height:5px}
-        ::-webkit-scrollbar-track{background:#f0ebe0}
-        ::-webkit-scrollbar-thumb{background:#c8bfb0;border-radius:3px}
-        input,textarea,select{outline:none;font-family:inherit}
-        input:focus,textarea:focus,select:focus{border-color:#e8a045!important;box-shadow:0 0 0 3px rgba(232,160,69,0.13)}
-        button{transition:opacity 0.12s}
-        button:hover{opacity:0.85}
-        button:active{opacity:0.7}
-      `}</style>
+      <style dangerouslySetInnerHTML={{__html:[
+        "@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');",
+        "*{box-sizing:border-box;margin:0;padding:0}",
+        "::-webkit-scrollbar{width:5px;height:5px}",
+        "::-webkit-scrollbar-track{background:#f0ebe0}",
+        "::-webkit-scrollbar-thumb{background:#c8bfb0;border-radius:3px}",
+        "input,textarea,select{outline:none;font-family:inherit}",
+        "input:focus,textarea:focus,select:focus{border-color:#e8a045!important;box-shadow:0 0 0 3px rgba(232,160,69,0.13)}",
+        "button{transition:opacity 0.12s}",
+        "button:hover{opacity:0.85}",
+        "button:active{opacity:0.7}",
+        "@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"
+      ].join("\n")}}/>
+
 
       <div style={{ display:"flex", height:"100vh", background:T.bg, fontFamily:"'DM Sans',sans-serif", color:T.text, overflow:"hidden" }}>
 
