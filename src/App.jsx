@@ -467,121 +467,132 @@ async function exportPDF(budget, project, client, empresa) {
   const JsPDF = await loadJsPDF();
   const doc = new JsPDF({ unit:"mm", format:"a4" });
   const W=210, M=16, CW=W-M*2;
+  const PAGE_H = 282; // usable height before footer
+
   const accentColor = empresa?.color || "#b5600a";
   const rgb = h => [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
   const fc=h=>{const[r,g,b]=rgb(h);doc.setFillColor(r,g,b);};
   const sc=h=>{const[r,g,b]=rgb(h);doc.setDrawColor(r,g,b);};
   const tc=h=>{const[r,g,b]=rgb(h);doc.setTextColor(r,g,b);};
-  let y=0;
 
-  // Header con color de empresa
-  fc(accentColor); doc.rect(0,0,W,36,"F");
-  fc("#ffffff"); doc.rect(5,0,W-5,36,"F");
-  fc(accentColor); doc.rect(M,10,3,16,"F");
+  const items=budget.items||[], mo=budget.mano_obra||[], col=budget.colaciones||[], ge=budget.gastos_extra||[];
+  const totalRows = items.length + mo.length + col.length + ge.length;
+  const tableCount = [items,mo,col,ge].filter(a=>a.length>0).length;
+  const hasInfo = !!(empresa?.email || empresa?.telefono || empresa?.rut);
+  const hasNotes = !!budget.notas;
+  const nonZeroLines = [items.reduce((a,i)=>a+i.sub,0), mo.reduce((a,i)=>a+i.sub,0), col.reduce((a,i)=>a+i.sub,0), ge.reduce((a,g)=>a+g.monto,0)].filter(v=>v>0).length + 2;
 
-  // Logo o inicial
+  // Estimate total height at baseline (scale=1, rh=8)
+  const estH = 44 + (hasInfo?14:0) + 36 + tableCount*22 + totalRows*8 + nonZeroLines*9 + 22 + (hasNotes?20:0);
+  const k = Math.min(1, PAGE_H / estH); // scale factor (≤1)
+  const sy = v => v * k;               // scale vertical dimension
+  const fs = v => Math.max(5, v * k);  // scale font size (min 5pt)
+  const rh = sy(8);                    // scaled row height
+
+  let y = 0;
+
+  // Header
+  fc(accentColor); doc.rect(0,0,W,sy(36),"F");
+  fc("#ffffff"); doc.rect(5,0,W-5,sy(36),"F");
+  fc(accentColor); doc.rect(M,sy(10),3,sy(16),"F");
+
   if (empresa?.logo_url && empresa.logo_url.startsWith("data:image")) {
-    try { doc.addImage(empresa.logo_url, "PNG", M+7, 8, 20, 20); } catch {}
+    try { doc.addImage(empresa.logo_url, "PNG", M+7, sy(8), 20, sy(20)); } catch {}
   }
   const nameX = empresa?.logo_url ? M+32 : M+9;
-  doc.setFont("helvetica","bold"); doc.setFontSize(18); tc("#2c2018");
-  doc.text(empresa?.nombre||"CARPINTERÍA", nameX, 20);
-  doc.setFont("helvetica","normal"); doc.setFontSize(8); tc("#9c8e80");
-  if (empresa?.descripcion) doc.text(empresa.descripcion, nameX, 28);
-  doc.text("Fecha: "+(budget.fecha||today()), W-M, 18, {align:"right"});
-  doc.text("N° "+(budget.id||"").slice(0,8).toUpperCase(), W-M, 26, {align:"right"});
-  y=44;
+  doc.setFont("helvetica","bold"); doc.setFontSize(fs(18)); tc("#2c2018");
+  doc.text(empresa?.nombre||"CARPINTERÍA", nameX, sy(20));
+  doc.setFont("helvetica","normal"); doc.setFontSize(fs(8)); tc("#9c8e80");
+  if (empresa?.descripcion) doc.text(empresa.descripcion, nameX, sy(28));
+  doc.text("Fecha: "+(budget.fecha||today()), W-M, sy(18), {align:"right"});
+  doc.text("N° "+(budget.id||"").slice(0,8).toUpperCase(), W-M, sy(26), {align:"right"});
+  y = sy(44);
 
   // Empresa info bar
-  if (empresa?.email || empresa?.telefono || empresa?.rut) {
-    fc("#fdf8f2"); doc.rect(M,y,CW,10,"F");
-    sc("#e2d9cc"); doc.setLineWidth(0.2); doc.rect(M,y,CW,10);
-    let infoX=M+4; doc.setFontSize(7); tc("#6b5a48");
-    if (empresa?.rut)     { doc.text("RUT: "+empresa.rut,     infoX, y+6.5); infoX+=50; }
-    if (empresa?.email)   { doc.text("✉ "+empresa.email,      infoX, y+6.5); infoX+=65; }
-    if (empresa?.telefono){ doc.text("✆ "+empresa.telefono,   infoX, y+6.5); infoX+=45; }
-    if (empresa?.sitio_web){ doc.text(empresa.sitio_web,      infoX, y+6.5); }
-    y+=14;
+  if (hasInfo) {
+    fc("#fdf8f2"); doc.rect(M,y,CW,sy(10),"F");
+    sc("#e2d9cc"); doc.setLineWidth(0.2); doc.rect(M,y,CW,sy(10));
+    let infoX=M+4; doc.setFontSize(fs(7)); tc("#6b5a48");
+    if (empresa?.rut)      { doc.text("RUT: "+empresa.rut,      infoX, y+sy(6.5)); infoX+=50; }
+    if (empresa?.email)    { doc.text("✉ "+empresa.email,       infoX, y+sy(6.5)); infoX+=65; }
+    if (empresa?.telefono) { doc.text("✆ "+empresa.telefono,    infoX, y+sy(6.5)); infoX+=45; }
+    if (empresa?.sitio_web){ doc.text(empresa.sitio_web,        infoX, y+sy(6.5)); }
+    y += sy(14);
   }
 
   // Project/client block
-  fc("#fdf8f2"); doc.rect(M,y,CW,28,"F");
-  sc("#e2d9cc"); doc.setLineWidth(0.3); doc.rect(M,y,CW,28);
-  doc.setFont("helvetica","bold"); doc.setFontSize(8); tc("#9c8e80");
-  doc.text("PROYECTO", M+5, y+8);
-  doc.setFontSize(13); tc("#2c2018");
-  doc.text(project?.nombre||"—", M+5, y+18);
-  tc("#9c8e80"); doc.text("CLIENTE", M+90, y+8);
-  doc.setFont("helvetica","normal"); doc.setFontSize(10); tc("#2c2018");
-  doc.text(client?.nombre||"—", M+90, y+18);
-  if(client?.tel){ doc.setFontSize(8); tc("#9c8e80"); doc.text(client.tel, M+90, y+24); }
+  fc("#fdf8f2"); doc.rect(M,y,CW,sy(28),"F");
+  sc("#e2d9cc"); doc.setLineWidth(0.3); doc.rect(M,y,CW,sy(28));
+  doc.setFont("helvetica","bold"); doc.setFontSize(fs(8)); tc("#9c8e80");
+  doc.text("PROYECTO", M+5, y+sy(8));
+  doc.setFontSize(fs(13)); tc("#2c2018");
+  doc.text(project?.nombre||"—", M+5, y+sy(18));
+  tc("#9c8e80"); doc.text("CLIENTE", M+90, y+sy(8));
+  doc.setFont("helvetica","normal"); doc.setFontSize(fs(10)); tc("#2c2018");
+  doc.text(client?.nombre||"—", M+90, y+sy(18));
+  if(client?.tel){ doc.setFontSize(fs(8)); tc("#9c8e80"); doc.text(client.tel, M+90, y+sy(24)); }
   const bcfg=BESTADOS[budget.estado]||BESTADOS.borrador;
-  fc("#f5f0e8"); doc.rect(W-M-30,y+7,28,12,"F");
-  doc.setFont("helvetica","bold"); doc.setFontSize(8); tc(bcfg.color);
-  doc.text((bcfg.label||"").toUpperCase(), W-M-16, y+15, {align:"center"});
-  y+=36;
+  fc("#f5f0e8"); doc.rect(W-M-30,y+sy(7),28,sy(12),"F");
+  doc.setFont("helvetica","bold"); doc.setFontSize(fs(8)); tc(bcfg.color);
+  doc.text((bcfg.label||"").toUpperCase(), W-M-16, y+sy(15), {align:"center"});
+  y += sy(36);
 
   const tbl=(headers,rows,widths,ttl,ac)=>{
     if(!rows.length)return;
-    doc.setFont("helvetica","bold"); doc.setFontSize(9);
+    doc.setFont("helvetica","bold"); doc.setFontSize(fs(9));
     const[r,g,b]=rgb(ac); doc.setTextColor(r,g,b);
-    doc.text(ttl,M,y+4); y+=9;
-    fc("#f5f0e8"); doc.rect(M,y,CW,8,"F");
-    sc("#e2d9cc"); doc.setLineWidth(0.2); doc.rect(M,y,CW,8);
-    let x=M; doc.setFontSize(7); tc("#9c8e80");
-    headers.forEach((h,i)=>{doc.text(h,i===headers.length-1?x+widths[i]-2:x+3,y+5.5,i===headers.length-1?{align:"right"}:{});x+=widths[i];});
-    y+=8;
+    doc.text(ttl,M,y+sy(4)); y+=sy(9);
+    fc("#f5f0e8"); doc.rect(M,y,CW,sy(8),"F");
+    sc("#e2d9cc"); doc.setLineWidth(0.2); doc.rect(M,y,CW,sy(8));
+    let x=M; doc.setFontSize(fs(7)); tc("#9c8e80");
+    headers.forEach((h,i)=>{doc.text(h,i===headers.length-1?x+widths[i]-2:x+3,y+sy(5.5),i===headers.length-1?{align:"right"}:{});x+=widths[i];});
+    y+=sy(8);
     rows.forEach((row,ri)=>{
-      const rh=8;
-      if(y+rh>272){doc.addPage();y=18;}
       if(ri%2===0){fc("#fdf8f2");doc.rect(M,y,CW,rh,"F");}
       sc("#e2d9cc");doc.setLineWidth(0.15);doc.line(M,y+rh,M+CW,y+rh);
       let rx=M;
       row.forEach((cell,ci)=>{
         const last=ci===row.length-1;
-        doc.setFont("helvetica",last?"bold":"normal");doc.setFontSize(8);
+        doc.setFont("helvetica",last?"bold":"normal");doc.setFontSize(fs(8));
         tc(last?ac:"#2c2018");
-        doc.text(String(cell),last?rx+widths[ci]-2:rx+3,y+5.5,last?{align:"right"}:{});
+        doc.text(String(cell),last?rx+widths[ci]-2:rx+3,y+sy(5.5),last?{align:"right"}:{});
         rx+=widths[ci];
       });
       y+=rh;
     });
-    y+=5;
+    y+=sy(5);
   };
 
-  const items=budget.items||[],mo=budget.mano_obra||[],col=budget.colaciones||[],ge=budget.gastos_extra||[];
   if(items.length) tbl(["DESCRIPCION","MATERIAL","MEDIDA","P.UNIT.","SUBTOTAL"],items.map(it=>[it.desc||"",it.matNombre||"",it.tipo==="m2"?`${Number(it.ancho).toFixed(2)}x${Number(it.largo).toFixed(2)}m`:it.tipo==="ml"?`${Number(it.cant).toFixed(2)}ml`:`${it.cant}u`,`${fmt(it.precio)}/${it.unidad}`,fmt(it.sub)]),[46,42,28,28,34],"MATERIALES",accentColor);
   if(mo.length)    tbl(["DESCRIPCION","DETALLE","TOTAL"],mo.map(m=>[m.desc||"",m.tipo==="hora"?`${m.cant}h x ${fmt(m.vhora)}/h`:"Monto fijo",fmt(m.sub)]),[78,70,30],"MANO DE OBRA","#1a5fa8");
   if(col.length)   tbl(["DESCRIPCION","DETALLE","TOTAL"],col.map(c=>[c.desc||"",`${c.dias}d x ${c.personas}p x ${fmt(c.mdia)}/d`,fmt(c.sub)]),[78,70,30],"COLACIONES","#2d7a3a");
   if(ge.length)    tbl(["DESCRIPCION","CATEGORIA","MONTO"],ge.map(g=>[g.desc||"",g.cat||"—",fmt(g.monto)]),[78,70,30],"GASTOS ADICIONALES","#c05c00");
 
-  if(y+70>272){doc.addPage();y=18;}
-  const tX=W-M-90,tW=90;
-  const sm=items.reduce((a,i)=>a+i.sub,0),smo=mo.reduce((a,i)=>a+i.sub,0),sc2=col.reduce((a,i)=>a+i.sub,0),sge=ge.reduce((a,g)=>a+g.monto,0);
-  const stot=sm+smo+sc2+sge,mar=stot*(Number(budget.margen||0)/100),tot=stot+mar;
+  // Totals
+  const tX=W-M-90, tW=90;
+  const sm=items.reduce((a,i)=>a+i.sub,0), smo=mo.reduce((a,i)=>a+i.sub,0), sc2=col.reduce((a,i)=>a+i.sub,0), sge=ge.reduce((a,g)=>a+g.monto,0);
+  const stot=sm+smo+sc2+sge, mar=stot*(Number(budget.margen||0)/100), tot=stot+mar;
 
   [["Materiales",fmt(sm),accentColor,sm===0],["Mano de obra",fmt(smo),"#1a5fa8",smo===0],["Colaciones",fmt(sc2),"#2d7a3a",sc2===0],["Gastos adicionales",fmt(sge),"#c05c00",sge===0],["Subtotal",fmt(stot),"#2c2018",false],[`Margen (${budget.margen||0}%)`,`+ ${fmt(mar)}`,accentColor,false]]
-    .filter(([,,,s])=>!s).forEach(([lbl,val,clr])=>{
-      doc.setFont("helvetica","normal");doc.setFontSize(9);tc("#9c8e80");doc.text(lbl,tX+3,y+5);
-      doc.setFont("helvetica","bold");tc(clr);doc.text(val,tX+tW-3,y+5,{align:"right"});
-      sc("#e2d9cc");doc.setLineWidth(0.2);doc.line(tX,y+7,tX+tW,y+7);y+=9;
+    .filter(([,,,skip])=>!skip).forEach(([lbl,val,clr])=>{
+      doc.setFont("helvetica","normal");doc.setFontSize(fs(9));tc("#9c8e80");doc.text(lbl,tX+3,y+sy(5));
+      doc.setFont("helvetica","bold");tc(clr);doc.text(val,tX+tW-3,y+sy(5),{align:"right"});
+      sc("#e2d9cc");doc.setLineWidth(0.2);doc.line(tX,y+sy(7),tX+tW,y+sy(7));y+=sy(9);
     });
 
-  fc("#fef3e2");doc.rect(tX,y,tW,16,"F");sc(accentColor);doc.setLineWidth(0.5);doc.rect(tX,y,tW,16);fc(accentColor);doc.rect(tX,y,4,16,"F");
-  doc.setFont("helvetica","bold");doc.setFontSize(8);tc("#9c8e80");doc.text("TOTAL PROYECTO",tX+8,y+6);
-  doc.setFontSize(15);tc(accentColor);doc.text(fmt(tot),tX+tW-3,y+12,{align:"right"});y+=22;
+  fc("#fef3e2");doc.rect(tX,y,tW,sy(16),"F");sc(accentColor);doc.setLineWidth(0.5);doc.rect(tX,y,tW,sy(16));fc(accentColor);doc.rect(tX,y,4,sy(16),"F");
+  doc.setFont("helvetica","bold");doc.setFontSize(fs(8));tc("#9c8e80");doc.text("TOTAL PROYECTO",tX+8,y+sy(6));
+  doc.setFontSize(fs(15));tc(accentColor);doc.text(fmt(tot),tX+tW-3,y+sy(12),{align:"right"});y+=sy(22);
 
-  if(budget.notas){doc.setFont("helvetica","bold");doc.setFontSize(8);tc("#9c8e80");doc.text("NOTAS",M,y);y+=5;doc.setFont("helvetica","normal");doc.setFontSize(8);tc("#6b5a48");const ls=doc.splitTextToSize(budget.notas,CW);doc.text(ls,M,y);}
+  if(hasNotes){doc.setFont("helvetica","bold");doc.setFontSize(fs(8));tc("#9c8e80");doc.text("NOTAS",M,y);y+=sy(5);doc.setFont("helvetica","normal");doc.setFontSize(fs(8));tc("#6b5a48");const ls=doc.splitTextToSize(budget.notas,CW);doc.text(ls,M,y);}
 
-  const pg=doc.internal.getNumberOfPages();
-  for(let i=1;i<=pg;i++){
-    doc.setPage(i);
-    sc("#e2d9cc");doc.setLineWidth(0.3);doc.line(M,284,W-M,284);
-    doc.setFont("helvetica","normal");doc.setFontSize(7);tc("#9c8e80");
-    doc.text((empresa?.nombre||"Carpintería")+" · "+today(),M,289);
-    if(empresa?.email) doc.text(empresa.email,W/2,289,{align:"center"});
-    doc.text(`Pág. ${i}/${pg}`,W-M,289,{align:"right"});
-  }
+  // Footer fijo al pie de página
+  sc("#e2d9cc");doc.setLineWidth(0.3);doc.line(M,284,W-M,284);
+  doc.setFont("helvetica","normal");doc.setFontSize(7);tc("#9c8e80");
+  doc.text((empresa?.nombre||"Carpintería")+" · "+today(),M,289);
+  if(empresa?.email) doc.text(empresa.email,W/2,289,{align:"center"});
+  doc.text("Pág. 1/1",W-M,289,{align:"right"});
+
   doc.save(`presupuesto-${(project?.nombre||"proyecto").replace(/\s+/g,"-")}-${today()}.pdf`);
 }
 
