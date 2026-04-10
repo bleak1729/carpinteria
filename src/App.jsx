@@ -136,7 +136,7 @@ const BESTADOS = {
 const TIPOS = { ml:"Metro Lineal", m2:"Metro Cuadrado", unidad:"Unidad" };
 
 // ─── BASE STYLES ───────────────────────────────────────────────────────────────
-const SI  = { width:"100%", padding:"11px 14px", borderRadius:12, background:T.white, border:"1.5px solid "+T.border, color:T.text, fontSize:15, fontFamily:"inherit", boxShadow:"0 1px 3px rgba(108,79,224,0.06)" };
+const SI  = { width:"100%", padding:"11px 14px", borderRadius:12, background:T.white, border:"1.5px solid "+T.border, color:T.text, fontSize:15, fontFamily:"inherit", boxShadow:"0 1px 3px rgba(108,79,224,0.06)", boxSizing:"border-box" };
 const BP  = { padding:"11px 20px", borderRadius:12, border:"none", cursor:"pointer", background:T.purpleGrad, color:"#fff", fontWeight:700, fontSize:14, fontFamily:"inherit", display:"inline-flex", alignItems:"center", gap:7, boxShadow:"0 4px 14px rgba(108,79,224,0.35)" };
 const BG  = { padding:"8px 14px", borderRadius:10, border:"1.5px solid "+T.border, cursor:"pointer", background:T.white, color:T.sub, fontSize:13, fontFamily:"inherit", display:"inline-flex", alignItems:"center", gap:5, boxShadow:"0 1px 3px rgba(108,79,224,0.06)" };
 const BSM = { ...BG, padding:"6px 10px", fontSize:12 };
