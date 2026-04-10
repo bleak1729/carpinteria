@@ -206,20 +206,20 @@ function LoginScreen({ onLogin }) {
 
   return (
     <div style={{ minHeight:"100vh", background:T.bg, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:24, fontFamily:"'Plus Jakarta Sans','DM Sans',sans-serif" }}>
-      {/* Header */}
-      <div style={{ textAlign:"center", marginBottom:32 }}>
-        <div style={{ width:72, height:72, background:T.purpleGrad, borderRadius:22, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 18px", boxShadow:"0 8px 24px rgba(108,79,224,0.4)" }}>
-          <span style={{ fontSize:32 }}>🔨</span>
-        </div>
-        <p style={{ fontSize:11, fontWeight:700, color:T.muted, letterSpacing:3, textTransform:"uppercase", marginBottom:8 }}>SISTEMA DE GESTIÓN</p>
-        <h1 style={{ fontSize:32, fontWeight:800, color:T.text, lineHeight:1.15, margin:0 }}>
-          Gestión de<br/>
-          <span style={{ background:T.purpleGrad, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Carpintería</span>
-        </h1>
-      </div>
-
       {/* Card */}
       <div style={{ width:"100%", maxWidth:420, background:T.white, borderRadius:24, padding:32, boxShadow:"0 8px 40px rgba(108,79,224,0.15)", border:"1px solid "+T.border }}>
+        {/* Header dentro de la card */}
+        <div style={{ textAlign:"center", marginBottom:28 }}>
+          <div style={{ width:64, height:64, background:T.purpleGrad, borderRadius:18, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px", boxShadow:"0 8px 24px rgba(108,79,224,0.4)" }}>
+            <span style={{ fontSize:28 }}>🔨</span>
+          </div>
+          <p style={{ fontSize:11, fontWeight:700, color:T.muted, letterSpacing:3, textTransform:"uppercase", marginBottom:6 }}>SISTEMA DE GESTIÓN</p>
+          <h1 style={{ fontSize:26, fontWeight:800, color:T.text, lineHeight:1.15, margin:0 }}>
+            Gestión de<br/>
+            <span style={{ background:T.purpleGrad, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Carpintería</span>
+          </h1>
+        </div>
+
         <form onSubmit={submit}>
           <Field label="Usuario / Email">
             <div style={{ position:"relative" }}>
