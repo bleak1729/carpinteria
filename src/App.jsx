@@ -97,85 +97,99 @@ function useMedia() {
 
 // ─── THEME ─────────────────────────────────────────────────────────────────────
 const T = {
-  bg:"#f5f0e8", white:"#ffffff", card:"#ffffff", cardAlt:"#fdf8f2",
-  border:"#e2d9cc", borderDk:"#c8bfb0",
-  amber:"#b5600a", amberBg:"#fef3e2", amberMid:"#e8a045",
-  text:"#2c2018", sub:"#6b5a48", muted:"#9c8e80",
-  green:"#2d7a3a", greenBg:"#edf7ef",
-  red:"#c0392b",   redBg:"#fdf0ee",
-  blue:"#1a5fa8",  blueBg:"#edf4fd",
-  orange:"#c05c00",orangeBg:"#fef0e6",
+  bg:        "#eeeaf8",   // lavanda suave
+  bgDeep:    "#e5dff5",   // lavanda más profunda para sidebar
+  white:     "#ffffff",
+  card:      "#ffffff",
+  cardAlt:   "#f8f6ff",   // lavanda muy clara
+  border:    "#ddd6f0",
+  borderDk:  "#c4b8e8",
+  // Púrpura principal
+  purple:    "#6c4fe0",
+  purpleDk:  "#5538c8",
+  purpleLt:  "#ede9fb",
+  purpleGrad:"linear-gradient(135deg, #7c5fe6 0%, #5538c8 100%)",
+  // Texto
+  text:      "#1a1033",
+  sub:       "#4a3f6b",
+  muted:     "#8b80a8",
+  // Semánticos
+  green:     "#1a8a4a",   greenBg:"#e8f8ee",
+  red:       "#d63550",   redBg:"#fde8ec",
+  blue:      "#2563b8",   blueBg:"#e8f0fd",
+  orange:    "#c26010",   orangeBg:"#fef0e3",
+  amber:     "#6c4fe0",   amberBg:"#ede9fb", amberMid:"#9b88e8",
 };
+
 const ESTADOS = {
-  pendiente:   { label:"Pendiente",   color:T.orange, bg:T.orangeBg },
-  en_progreso: { label:"En Progreso", color:T.blue,   bg:T.blueBg   },
-  completado:  { label:"Completado",  color:T.green,  bg:T.greenBg  },
-  cancelado:   { label:"Cancelado",   color:T.red,    bg:T.redBg    },
+  pendiente:   { label:"Pendiente",   color:"#c26010", bg:"#fef0e3" },
+  en_progreso: { label:"En Progreso", color:"#2563b8", bg:"#e8f0fd" },
+  completado:  { label:"Completado",  color:"#1a8a4a", bg:"#e8f8ee" },
+  cancelado:   { label:"Cancelado",   color:"#d63550", bg:"#fde8ec" },
 };
 const BESTADOS = {
-  borrador:  { label:"Borrador",  color:T.muted, bg:"#f4f0ec" },
-  enviado:   { label:"Enviado",   color:T.blue,  bg:T.blueBg  },
-  aprobado:  { label:"Aprobado",  color:T.green, bg:T.greenBg },
-  rechazado: { label:"Rechazado", color:T.red,   bg:T.redBg   },
+  borrador:  { label:"Borrador",  color:T.muted,   bg:"#f0edf8" },
+  enviado:   { label:"Enviado",   color:"#2563b8", bg:"#e8f0fd" },
+  aprobado:  { label:"Aprobado",  color:"#1a8a4a", bg:"#e8f8ee" },
+  rechazado: { label:"Rechazado", color:"#d63550", bg:"#fde8ec" },
 };
 const TIPOS = { ml:"Metro Lineal", m2:"Metro Cuadrado", unidad:"Unidad" };
 
 // ─── BASE STYLES ───────────────────────────────────────────────────────────────
-const SI  = { width:"100%", padding:"10px 12px", borderRadius:8, background:T.white, border:"1.5px solid "+T.border, color:T.text, fontSize:15, fontFamily:"inherit" };
-const BP  = { padding:"10px 18px", borderRadius:9, border:"none", cursor:"pointer", background:T.amber, color:"#fff", fontWeight:700, fontSize:14, fontFamily:"inherit", display:"inline-flex", alignItems:"center", gap:6 };
-const BG  = { padding:"8px 12px", borderRadius:9, border:"1.5px solid "+T.border, cursor:"pointer", background:T.white, color:T.sub, fontSize:13, fontFamily:"inherit", display:"inline-flex", alignItems:"center", gap:5 };
-const BSM = { ...BG, padding:"6px 9px", fontSize:12 };
+const SI  = { width:"100%", padding:"11px 14px", borderRadius:12, background:T.white, border:"1.5px solid "+T.border, color:T.text, fontSize:15, fontFamily:"inherit", boxShadow:"0 1px 3px rgba(108,79,224,0.06)" };
+const BP  = { padding:"11px 20px", borderRadius:12, border:"none", cursor:"pointer", background:T.purpleGrad, color:"#fff", fontWeight:700, fontSize:14, fontFamily:"inherit", display:"inline-flex", alignItems:"center", gap:7, boxShadow:"0 4px 14px rgba(108,79,224,0.35)" };
+const BG  = { padding:"8px 14px", borderRadius:10, border:"1.5px solid "+T.border, cursor:"pointer", background:T.white, color:T.sub, fontSize:13, fontFamily:"inherit", display:"inline-flex", alignItems:"center", gap:5, boxShadow:"0 1px 3px rgba(108,79,224,0.06)" };
+const BSM = { ...BG, padding:"6px 10px", fontSize:12 };
 
 // ─── ATOMS ─────────────────────────────────────────────────────────────────────
-const Card  = ({ children, style }) => <div style={{ background:T.card, border:"1px solid "+T.border, borderRadius:12, padding:16, boxShadow:"0 1px 4px rgba(44,32,24,0.07)", ...style }}>{children}</div>;
-const Badge = ({ label, color, bg }) => <span style={{ padding:"3px 9px", borderRadius:20, fontSize:11, fontWeight:600, color, background:bg, border:"1px solid "+color+"30", whiteSpace:"nowrap" }}>{label}</span>;
-const Field = ({ label, children, style }) => <div style={{ marginBottom:13, ...style }}><label style={{ display:"block", fontSize:11, fontWeight:700, color:T.muted, marginBottom:5, textTransform:"uppercase", letterSpacing:0.9 }}>{label}</label>{children}</div>;
+const Card  = ({ children, style }) => <div style={{ background:T.card, border:"1px solid "+T.border, borderRadius:16, padding:20, boxShadow:"0 2px 12px rgba(108,79,224,0.08)", ...style }}>{children}</div>;
+const Badge = ({ label, color, bg }) => <span style={{ padding:"4px 10px", borderRadius:20, fontSize:11, fontWeight:700, color, background:bg, border:"1px solid "+color+"30", whiteSpace:"nowrap", letterSpacing:0.3 }}>{label}</span>;
+const Field = ({ label, children, style }) => <div style={{ marginBottom:14, ...style }}><label style={{ display:"block", fontSize:11, fontWeight:700, color:T.muted, marginBottom:6, textTransform:"uppercase", letterSpacing:1 }}>{label}</label>{children}</div>;
 const Row   = ({ children, cols, gap, style }) => <div style={{ display:"grid", gridTemplateColumns:cols||"1fr 1fr", gap:gap||12, ...style }}>{children}</div>;
 
 function Toast({ msg, type }) {
   if (!msg) return null;
-  const bg = type==="error" ? T.redBg : T.greenBg;
-  const color = type==="error" ? T.red : T.green;
-  return <div style={{ position:"fixed", bottom:90, left:"50%", transform:"translateX(-50%)", background:bg, color, border:"1px solid "+color+"40", borderRadius:10, padding:"10px 20px", fontSize:13, fontWeight:600, zIndex:500, boxShadow:"0 4px 12px rgba(0,0,0,0.12)", whiteSpace:"nowrap" }}>{msg}</div>;
+  const isErr = type === "error";
+  return <div style={{ position:"fixed", bottom:90, left:"50%", transform:"translateX(-50%)", background:isErr?T.redBg:T.purpleLt, color:isErr?T.red:T.purple, border:"1.5px solid "+(isErr?T.red:T.purple)+"40", borderRadius:12, padding:"10px 22px", fontSize:13, fontWeight:700, zIndex:500, boxShadow:"0 4px 20px rgba(108,79,224,0.2)", whiteSpace:"nowrap" }}>{msg}</div>;
 }
 
 // ─── MODAL ─────────────────────────────────────────────────────────────────────
 function Modal({ children, onClose, wide }) {
   const { mobile } = useMedia();
   return (
-    <div onClick={e => e.target===e.currentTarget && onClose()} style={{ position:"fixed", inset:0, background:"rgba(44,32,24,0.4)", display:"flex", alignItems:mobile?"flex-end":"center", justifyContent:"center", zIndex:400, padding:mobile?0:16, backdropFilter:"blur(2px)" }}>
-      <div style={{ background:T.card, border:"1px solid "+T.border, borderRadius:mobile?"20px 20px 0 0":"16px", width:"100%", maxWidth:mobile?"100%":wide?860:540, maxHeight:"94vh", overflow:"auto", display:"flex", flexDirection:"column", boxShadow:"0 8px 32px rgba(44,32,24,0.15)" }}>
+    <div onClick={e => e.target===e.currentTarget && onClose()} style={{ position:"fixed", inset:0, background:"rgba(26,16,51,0.45)", display:"flex", alignItems:mobile?"flex-end":"center", justifyContent:"center", zIndex:400, padding:mobile?0:16, backdropFilter:"blur(4px)" }}>
+      <div style={{ background:T.card, border:"1px solid "+T.border, borderRadius:mobile?"24px 24px 0 0":"20px", width:"100%", maxWidth:mobile?"100%":wide?880:560, maxHeight:"94vh", overflow:"auto", display:"flex", flexDirection:"column", boxShadow:"0 20px 60px rgba(108,79,224,0.25)" }}>
         {children}
       </div>
     </div>
   );
 }
 const MHead = ({ title, onClose }) => (
-  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", borderBottom:"1px solid "+T.border, flexShrink:0 }}>
-    <span style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:19, color:T.text }}>{title}</span>
-    <button onClick={onClose} style={{ background:"none", border:"1px solid "+T.border, borderRadius:7, cursor:"pointer", color:T.muted, padding:"4px 5px", display:"flex" }}><X size={16}/></button>
+  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"18px 24px", borderBottom:"1px solid "+T.border, flexShrink:0 }}>
+    <span style={{ fontFamily:"'Plus Jakarta Sans','DM Sans',sans-serif", fontSize:18, fontWeight:700, color:T.text }}>{title}</span>
+    <button onClick={onClose} style={{ background:T.purpleLt, border:"none", borderRadius:8, cursor:"pointer", color:T.purple, padding:"6px 7px", display:"flex" }}><X size={15}/></button>
   </div>
 );
 
 function Section({ icon:Icon, color, bg, title, children, collapsible }) {
   const [open, setOpen] = useState(true);
   return (
-    <div style={{ background:bg||T.cardAlt, border:"1.5px solid "+color+"30", borderRadius:12, marginBottom:16 }}>
-      <div onClick={collapsible?()=>setOpen(o=>!o):undefined} style={{ display:"flex", alignItems:"center", gap:8, padding:"11px 14px", cursor:collapsible?"pointer":"default", borderBottom:open?"1px solid "+color+"20":"none", borderRadius:open?"12px 12px 0 0":"12px" }}>
-        <div style={{ width:28, height:28, borderRadius:7, background:color+"18", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}><Icon size={14} color={color}/></div>
-        <span style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:15, color:T.text, flex:1 }}>{title}</span>
+    <div style={{ background:bg||T.cardAlt, border:"1.5px solid "+color+"30", borderRadius:14, marginBottom:16 }}>
+      <div onClick={collapsible?()=>setOpen(o=>!o):undefined} style={{ display:"flex", alignItems:"center", gap:10, padding:"13px 16px", cursor:collapsible?"pointer":"default", borderBottom:open?"1px solid "+color+"20":"none", borderRadius:open?"14px 14px 0 0":"14px" }}>
+        <div style={{ width:30, height:30, borderRadius:8, background:color+"20", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}><Icon size={14} color={color}/></div>
+        <span style={{ fontFamily:"'Plus Jakarta Sans','DM Sans',sans-serif", fontSize:14, fontWeight:700, color:T.text, flex:1 }}>{title}</span>
         {collapsible && (open ? <ChevronUp size={14} color={T.muted}/> : <ChevronDown size={14} color={T.muted}/>)}
       </div>
-      {open && <div style={{ padding:"12px 14px" }}>{children}</div>}
+      {open && <div style={{ padding:"14px 16px" }}>{children}</div>}
     </div>
   );
 }
 
 // ─── LOGIN SCREEN ──────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin }) {
-  const [email, setEmail]   = useState("");
-  const [pass,  setPass]    = useState("");
-  const [show,  setShow]    = useState(false);
+  const [email,   setEmail]   = useState("");
+  const [pass,    setPass]    = useState("");
+  const [show,    setShow]    = useState(false);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
 
@@ -186,49 +200,60 @@ function LoginScreen({ onLogin }) {
     try {
       const data = await sb.signIn(email, pass);
       onLogin(data);
-    } catch(err) {
-      setError(err.message);
-    }
+    } catch(err) { setError(err.message); }
     setLoading(false);
   };
 
   return (
-    <div style={{ minHeight:"100vh", background:T.bg, display:"flex", alignItems:"center", justifyContent:"center", padding:20, fontFamily:"'DM Sans',sans-serif" }}>
-      <div style={{ width:"100%", maxWidth:400 }}>
-        {/* Logo */}
-        <div style={{ textAlign:"center", marginBottom:32 }}>
-          <div style={{ width:56, height:56, background:T.amber, borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px", boxShadow:"0 4px 12px rgba(181,96,10,0.3)" }}>
-            <span style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:28, color:"#fff" }}>C</span>
-          </div>
-          <h1 style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:26, color:T.text, margin:0 }}>Carpintería</h1>
-          <p style={{ color:T.muted, fontSize:13, marginTop:4 }}>Gestión de Proyectos</p>
+    <div style={{ minHeight:"100vh", background:T.bg, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:24, fontFamily:"'Plus Jakarta Sans','DM Sans',sans-serif" }}>
+      {/* Header */}
+      <div style={{ textAlign:"center", marginBottom:32 }}>
+        <div style={{ width:72, height:72, background:T.purpleGrad, borderRadius:22, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 18px", boxShadow:"0 8px 24px rgba(108,79,224,0.4)" }}>
+          <span style={{ fontSize:32 }}>🔨</span>
         </div>
-
-        <Card style={{ padding:28 }}>
-          <h2 style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:20, color:T.text, marginBottom:20, fontWeight:400 }}>Iniciar sesión</h2>
-          <form onSubmit={submit}>
-            <Field label="Email">
-              <input style={SI} type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="admin@carpinteria.cl" autoComplete="email"/>
-            </Field>
-            <Field label="Contraseña">
-              <div style={{ position:"relative" }}>
-                <input style={{ ...SI, paddingRight:44 }} type={show?"text":"password"} value={pass} onChange={e=>setPass(e.target.value)} placeholder="••••••••" autoComplete="current-password"/>
-                <button type="button" onClick={()=>setShow(s=>!s)} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:T.muted, display:"flex", padding:0 }}>
-                  {show ? <EyeOff size={16}/> : <Eye size={16}/>}
-                </button>
-              </div>
-            </Field>
-            {error && <div style={{ padding:"9px 12px", borderRadius:8, background:T.redBg, color:T.red, fontSize:13, marginBottom:14, border:"1px solid "+T.red+"30" }}>{error}</div>}
-            <button type="submit" style={{ ...BP, width:"100%", justifyContent:"center", opacity:loading?0.7:1 }} disabled={loading}>
-              <LogIn size={15}/>{loading ? "Ingresando..." : "Ingresar"}
-            </button>
-          </form>
-        </Card>
-
-        <p style={{ textAlign:"center", color:T.muted, fontSize:12, marginTop:16 }}>
-          Solo usuarios registrados pueden acceder
-        </p>
+        <p style={{ fontSize:11, fontWeight:700, color:T.muted, letterSpacing:3, textTransform:"uppercase", marginBottom:8 }}>SISTEMA DE GESTIÓN</p>
+        <h1 style={{ fontSize:32, fontWeight:800, color:T.text, lineHeight:1.15, margin:0 }}>
+          Gestión de<br/>
+          <span style={{ background:T.purpleGrad, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Carpintería</span>
+        </h1>
       </div>
+
+      {/* Card */}
+      <div style={{ width:"100%", maxWidth:420, background:T.white, borderRadius:24, padding:32, boxShadow:"0 8px 40px rgba(108,79,224,0.15)", border:"1px solid "+T.border }}>
+        <form onSubmit={submit}>
+          <Field label="Usuario / Email">
+            <div style={{ position:"relative" }}>
+              <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:T.muted, display:"flex" }}>
+                <Users size={16}/>
+              </div>
+              <input style={{ ...SI, paddingLeft:42, borderRadius:14 }} type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="admin@carpinteria.cl" autoComplete="email"/>
+            </div>
+          </Field>
+          <Field label="Contraseña">
+            <div style={{ position:"relative" }}>
+              <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:T.muted, display:"flex" }}>
+                <span style={{ fontSize:16 }}>🔒</span>
+              </div>
+              <input style={{ ...SI, paddingLeft:42, paddingRight:48, borderRadius:14 }} type={show?"text":"password"} value={pass} onChange={e=>setPass(e.target.value)} placeholder="••••••••••" autoComplete="current-password"/>
+              <button type="button" onClick={()=>setShow(s=>!s)} style={{ position:"absolute", right:14, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:T.muted, display:"flex", padding:0 }}>
+                {show ? <EyeOff size={16}/> : <Eye size={16}/>}
+              </button>
+            </div>
+          </Field>
+
+          {error && <div style={{ padding:"10px 14px", borderRadius:10, background:T.redBg, color:T.red, fontSize:13, fontWeight:600, marginBottom:16, border:"1px solid "+T.red+"30" }}>{error}</div>}
+
+          <button type="submit" style={{ ...BP, width:"100%", justifyContent:"center", fontSize:16, padding:"14px", borderRadius:14, opacity:loading?0.7:1, marginTop:4 }} disabled={loading}>
+            {loading ? "Ingresando..." : "Iniciar Sesión →"}
+          </button>
+        </form>
+
+        <div style={{ textAlign:"center", marginTop:20, paddingTop:20, borderTop:"1px solid "+T.border }}>
+          <p style={{ fontSize:12, color:T.muted }}>Solo usuarios registrados pueden acceder</p>
+        </div>
+      </div>
+
+      <p style={{ color:T.muted, fontSize:11, marginTop:24 }}>© {new Date().getFullYear()} Carpintería · Sistema de Gestión</p>
     </div>
   );
 }
@@ -415,10 +440,10 @@ function BottomNav({ view, setView }) {
     { id:"clients",   Icon:Users,           label:"Clientes"   },
   ];
   return (
-    <nav style={{ position:"fixed", bottom:0, left:0, right:0, background:T.white, borderTop:"1px solid "+T.border, display:"flex", zIndex:200, boxShadow:"0 -2px 10px rgba(44,32,24,0.08)" }}>
+    <nav style={{ position:"fixed", bottom:0, left:0, right:0, background:T.white, borderTop:"1px solid "+T.border, display:"flex", zIndex:200, boxShadow:"0 -4px 20px rgba(108,79,224,0.1)" }}>
       {items.map(({ id, Icon, label }) => {
         const on = view===id;
-        return <button key={id} onClick={()=>setView(id)} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:2, padding:"9px 2px 8px", border:"none", background:"none", cursor:"pointer", color:on?T.amber:T.muted, fontFamily:"inherit", fontSize:9, fontWeight:on?700:400 }}><Icon size={19} strokeWidth={on?2.2:1.8}/>{label}</button>;
+        return <button key={id} onClick={()=>setView(id)} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:2, padding:"9px 2px 8px", border:"none", background:"none", cursor:"pointer", color:on?T.purple:T.muted, fontFamily:"inherit", fontSize:9, fontWeight:on?700:400 }}><Icon size={19} strokeWidth={on?2.5:1.8}/>{label}</button>;
       })}
     </nav>
   );
@@ -839,7 +864,6 @@ function Budgets({ buds,projs,clis,mats,empresa,reload,setModal }) {
     </div>
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
       {buds.map(b=>{const pj=projs.find(p=>p.id===b.proyecto_id),cl=pj?clis.find(c=>c.id===pj.cliente_id):null,cfg=BESTADOS[b.estado]||BESTADOS.borrador;const sm=(b.items||[]).reduce((a,i)=>a+i.sub,0),smo=(b.mano_obra||[]).reduce((a,i)=>a+i.sub,0),sc=(b.colaciones||[]).reduce((a,i)=>a+i.sub,0),sg=(b.gastos_extra||[]).reduce((a,g)=>a+g.monto,0);return(<Card key={b.id} style={{padding:14}}><div style={{display:"flex",flexDirection:mobile?"column":"row",gap:12}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5,flexWrap:"wrap"}}><span style={{fontFamily:"'DM Serif Display',Georgia,serif",fontSize:18,color:T.text}}>{pj?.nombre||"Proyecto eliminado"}</span><Badge label={cfg.label} color={cfg.color} bg={cfg.bg}/></div><div style={{fontSize:13,color:T.muted,marginBottom:8}}>{cl?.nombre||"—"} · {b.fecha}</div><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{[[sm,"Materiales",T.amber,T.amberBg],[smo,"M.O.",T.blue,T.blueBg],[sc,"Colac.",T.green,T.greenBg],[sg,"Gastos",T.orange,T.orangeBg]].filter(([v])=>v>0).map(([v,l,c,bg])=>(<span key={l} style={{fontSize:12,padding:"3px 9px",borderRadius:20,background:bg,color:c,fontWeight:600,border:"1px solid "+c+"25"}}>{l}: {fmt(v)}</span>))}</div></div><div style={{display:"flex",flexDirection:mobile?"row":"column",alignItems:mobile?"center":"flex-end",justifyContent:"space-between",gap:8,flexShrink:0}}><div style={{fontFamily:"'DM Serif Display',Georgia,serif",fontSize:mobile?22:26,color:T.amber}}>{fmt(b.total||0)}</div><div style={{display:"flex",gap:6}}><button onClick={()=>doExport(b)} disabled={!!exp} style={{...BP,padding:"7px 12px",fontSize:12,opacity:exp===b.id?0.6:1,background:T.green}}>{exp===b.id?"...":(<><Download size={12}/>{!mobile&&" PDF"}</>)}</button><button onClick={()=>setModal({t:"bud",d:b})} style={BSM}><Edit2 size={12}/></button><button onClick={()=>del(b.id)} style={{...BSM,color:T.red,border:"1px solid "+T.red+"30",background:T.redBg}}><Trash2 size={12}/></button></div></div></div></Card>);})}
-    </div>
   </div>);
 }
 
@@ -924,16 +948,20 @@ export default function App() {
   ];
 
   if (loading) return (
-    <div style={{ background:T.bg, height:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif", gap:12 }}>
-      <RefreshCw size={28} color={T.amber} style={{ animation:"spin 1s linear infinite" }}/>
-      <p style={{ color:T.muted, fontSize:14 }}>Conectando...</p>
+    <div style={{ background:T.bg, height:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'Plus Jakarta Sans','DM Sans',sans-serif", gap:14 }}>
+      <div style={{ width:56, height:56, background:T.purpleGrad, borderRadius:18, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 8px 24px rgba(108,79,224,0.3)" }}>
+        <RefreshCw size={24} color="#fff" style={{ animation:"spin 1s linear infinite" }}/>
+      </div>
+      <p style={{ color:T.muted, fontSize:14, fontWeight:500 }}>Conectando con la base de datos...</p>
     </div>
   );
 
   if (error) return (
-    <div style={{ background:T.bg, height:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif", padding:24, gap:16 }}>
-      <AlertTriangle size={32} color={T.red}/>
-      <h2 style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:22, color:T.text }}>Error de conexión</h2>
+    <div style={{ background:T.bg, height:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'Plus Jakarta Sans','DM Sans',sans-serif", padding:24, gap:16 }}>
+      <div style={{ width:64, height:64, background:T.redBg, borderRadius:20, display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <AlertTriangle size={30} color={T.red}/>
+      </div>
+      <h2 style={{ fontSize:22, fontWeight:800, color:T.text }}>Error de conexión</h2>
       <p style={{ color:T.muted, fontSize:14, textAlign:"center", maxWidth:400 }}>{error}</p>
       <button style={BP} onClick={loadAll}><RefreshCw size={14}/>Reintentar</button>
     </div>
@@ -949,81 +977,81 @@ export default function App() {
   return (
     <>
       <style dangerouslySetInnerHTML={{__html:[
-        "@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');",
+        "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');",
         "*{box-sizing:border-box;margin:0;padding:0}",
         "::-webkit-scrollbar{width:5px;height:5px}",
-        "::-webkit-scrollbar-track{background:#f0ebe0}",
-        "::-webkit-scrollbar-thumb{background:#c8bfb0;border-radius:3px}",
+        "::-webkit-scrollbar-track{background:#ede9fb}",
+        "::-webkit-scrollbar-thumb{background:#c4b8e8;border-radius:3px}",
         "input,textarea,select{outline:none;font-family:inherit}",
-        "input:focus,textarea:focus,select:focus{border-color:#e8a045!important;box-shadow:0 0 0 3px rgba(232,160,69,0.13)}",
-        "button{transition:opacity 0.12s}",
-        "button:hover{opacity:0.85}",
-        "button:active{opacity:0.7}",
+        "input:focus,textarea:focus,select:focus{border-color:#6c4fe0!important;box-shadow:0 0 0 3px rgba(108,79,224,0.12)!important}",
+        "button{transition:opacity 0.12s,transform 0.1s}",
+        "button:hover{opacity:0.88}",
+        "button:active{opacity:0.75;transform:scale(0.98)}",
         "@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"
       ].join("\n")}}/>
 
 
-      <div style={{ display:"flex", height:"100vh", background:T.bg, fontFamily:"'DM Sans',sans-serif", color:T.text, overflow:"hidden" }}>
+      <div style={{ display:"flex", height:"100vh", background:T.bg, fontFamily:"'Plus Jakarta Sans','DM Sans',sans-serif", color:T.text, overflow:"hidden" }}>
 
         {/* Sidebar */}
         {!mobile && (
-          <aside style={{ width:sidebar?224:62, background:T.white, borderRight:"1px solid "+T.border, display:"flex", flexDirection:"column", transition:"width 0.2s", overflow:"hidden", flexShrink:0, boxShadow:"1px 0 4px rgba(44,32,24,0.05)" }}>
+          <aside style={{ width:sidebar?230:66, background:T.white, borderRight:"1px solid "+T.border, display:"flex", flexDirection:"column", transition:"width 0.2s", overflow:"hidden", flexShrink:0, boxShadow:"2px 0 12px rgba(108,79,224,0.08)" }}>
             {/* Logo */}
-            <div style={{ padding:"15px 13px", borderBottom:"1px solid "+T.border, display:"flex", alignItems:"center", gap:10 }}>
+            <div style={{ padding:"18px 14px", borderBottom:"1px solid "+T.border, display:"flex", alignItems:"center", gap:12 }}>
               {empresa?.logo_url
-                ? <img src={empresa.logo_url} alt="logo" style={{ width:34, height:34, objectFit:"contain", borderRadius:8, flexShrink:0, border:"1px solid "+T.border }}/>
-                : <div style={{ width:34, height:34, background:empresa?.color||T.amber, borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                    <span style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:18, color:"#fff" }}>{(empresa?.nombre||"C").charAt(0)}</span>
+                ? <img src={empresa.logo_url} alt="logo" style={{ width:38, height:38, objectFit:"contain", borderRadius:10, flexShrink:0, border:"1px solid "+T.border }}/>
+                : <div style={{ width:38, height:38, background:T.purpleGrad, borderRadius:12, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, boxShadow:"0 4px 10px rgba(108,79,224,0.3)" }}>
+                    <span style={{ fontSize:20 }}>🔨</span>
                   </div>
               }
               {sidebar && <div>
-                <div style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:14, color:T.text, lineHeight:1 }}>{empresa?.nombre||"Carpintería"}</div>
-                <div style={{ fontSize:9, color:T.muted, letterSpacing:0.5, marginTop:2 }}>{session?"● ADMINISTRADOR":"● SOLO LECTURA"}</div>
+                <div style={{ fontWeight:800, fontSize:14, color:T.text, lineHeight:1 }}>{empresa?.nombre||"Carpintería"}</div>
+                <div style={{ fontSize:10, color:T.purple, fontWeight:600, marginTop:2 }}>{session?"● Admin":"● Sólo lectura"}</div>
               </div>}
             </div>
 
             {/* Nav */}
-            <nav style={{ flex:1, padding:"10px 7px" }}>
+            <nav style={{ flex:1, padding:"12px 8px" }}>
               {NAV.map(({ id,Icon,label }) => {
                 const on=view===id;
-                return <button key={id} onClick={()=>setView(id)} style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"10px 10px", borderRadius:9, border:"none", cursor:"pointer", background:on?T.amberBg:"transparent", color:on?T.amber:T.sub, marginBottom:3, textAlign:"left", fontFamily:"inherit", fontSize:14, fontWeight:on?600:400, borderLeft:on?"3px solid "+T.amber:"3px solid transparent" }}><Icon size={17} style={{ flexShrink:0 }}/>{sidebar&&<span>{label}</span>}</button>;
+                return <button key={id} onClick={()=>setView(id)} style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"10px 10px", borderRadius:12, border:"none", cursor:"pointer", background:on?T.purpleLt:"transparent", color:on?T.purple:T.sub, marginBottom:3, textAlign:"left", fontFamily:"inherit", fontSize:13, fontWeight:on?700:500 }}><Icon size={17} style={{ flexShrink:0 }}/>{sidebar&&<span>{label}</span>}</button>;
               })}
             </nav>
 
-            {/* Session button */}
-            <div style={{ padding:"8px 8px 12px" }}>
+            {/* Session */}
+            <div style={{ padding:"8px 8px 14px" }}>
               {session
-                ? <button onClick={handleLogout} style={{ ...BG, width:"100%", justifyContent:sidebar?"flex-start":"center", color:T.red, border:"1px solid "+T.red+"30", background:T.redBg }}>
+                ? <button onClick={handleLogout} style={{ ...BG, width:"100%", justifyContent:sidebar?"flex-start":"center", color:T.red, border:"1px solid "+T.red+"30", background:T.redBg, boxShadow:"none" }}>
                     <LogOut size={14}/>{sidebar&&"Cerrar sesión"}
                   </button>
-                : <button onClick={()=>setView("empresa")} style={{ ...BG, width:"100%", justifyContent:sidebar?"flex-start":"center" }}>
+                : <button onClick={()=>setView("empresa")} style={{ ...BG, width:"100%", justifyContent:sidebar?"flex-start":"center", color:T.purple, border:"1px solid "+T.purple+"30", background:T.purpleLt, boxShadow:"none" }}>
                     <LogIn size={14}/>{sidebar&&"Admin"}
                   </button>
               }
             </div>
 
-            <button onClick={()=>setSidebar(s=>!s)} style={{ margin:"0 8px 10px", padding:8, borderRadius:8, border:"1px solid "+T.border, cursor:"pointer", background:T.bg, color:T.muted, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <button onClick={()=>setSidebar(s=>!s)} style={{ margin:"0 8px 12px", padding:9, borderRadius:10, border:"1px solid "+T.border, cursor:"pointer", background:T.bg, color:T.muted, display:"flex", alignItems:"center", justifyContent:"center" }}>
               <Menu size={15}/>
             </button>
           </aside>
         )}
 
         {/* Main */}
-        <main style={{ flex:1, overflow:"auto", padding:mobile?"14px 14px 80px":"28px 36px", background:T.bg }}>
+        <main style={{ flex:1, overflow:"auto", padding:mobile?"16px 14px 84px":"28px 36px", background:T.bg }}>
           {mobile && (
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                 {empresa?.logo_url
-                  ? <img src={empresa.logo_url} alt="logo" style={{ width:30, height:30, objectFit:"contain", borderRadius:7, border:"1px solid "+T.border }}/>
-                  : <div style={{ width:30, height:30, background:empresa?.color||T.amber, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:16, color:"#fff" }}>{(empresa?.nombre||"C").charAt(0)}</span></div>
+                  ? <img src={empresa.logo_url} alt="logo" style={{ width:34, height:34, objectFit:"contain", borderRadius:10, border:"1px solid "+T.border }}/>
+                  : <div style={{ width:34, height:34, background:T.purpleGrad, borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ fontSize:18 }}>🔨</span></div>
                 }
-                <span style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:15, color:T.text }}>{empresa?.nombre||"Carpintería"}</span>
+                <span style={{ fontWeight:800, fontSize:15, color:T.text }}>{empresa?.nombre||"Carpintería"}</span>
               </div>
               <div style={{ display:"flex", gap:6 }}>
-                {session && <button onClick={()=>setView("empresa")} style={{ ...BSM, color:T.amber, border:"1px solid "+T.amber+"40" }}><Building2 size={13}/></button>}
+                {session && <button onClick={()=>setView("empresa")} style={{ ...BSM, color:T.purple, border:"1px solid "+T.purple+"30", background:T.purpleLt, boxShadow:"none" }}><Building2 size={13}/></button>}
                 {session
-                  ? <button onClick={handleLogout} style={{ ...BSM, color:T.red, border:"1px solid "+T.red+"30", background:T.redBg }}><LogOut size={13}/></button>
-                  : <button onClick={()=>setView("empresa")} style={BSM}><LogIn size={13}/></button>
+                  ? <button onClick={handleLogout} style={{ ...BSM, color:T.red, border:"1px solid "+T.red+"30", background:T.redBg, boxShadow:"none" }}><LogOut size={13}/></button>
+                  : <button onClick={()=>setView("empresa")} style={{ ...BSM, color:T.purple, border:"1px solid "+T.purple+"30", background:T.purpleLt, boxShadow:"none" }}><LogIn size={13}/></button>
                 }
               </div>
             </div>
