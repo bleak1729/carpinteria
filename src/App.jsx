@@ -885,24 +885,6 @@ export default function App() {
 
   useEffect(() => { if(tablet) setSidebar(false); else setSidebar(true); }, [tablet]);
 
-  // Restore session from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("sb_session");
-    if (stored) {
-      try {
-        const s = JSON.parse(stored);
-        if (s.access_token && s.expires_at > Date.now()/1000) {
-          sb.setToken(s.access_token);
-          setSession(s);
-        } else {
-          localStorage.removeItem("sb_session");
-        }
-      } catch {}
-    }
-    loadAll();
-    loadJsPDF();
-  }, []);
-
   const showToast = (msg, type="ok") => { setToast({msg,type}); setTimeout(()=>setToast(null), 2500); };
 
   const loadAll = async () => {
@@ -922,6 +904,24 @@ export default function App() {
     }
     setLoading(false);
   };
+
+  // Restore session from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("sb_session");
+    if (stored) {
+      try {
+        const s = JSON.parse(stored);
+        if (s.access_token && s.expires_at > Date.now()/1000) {
+          sb.setToken(s.access_token);
+          setSession(s);
+        } else {
+          localStorage.removeItem("sb_session");
+        }
+      } catch {}
+    }
+    loadAll();
+    loadJsPDF();
+  }, []);
 
   const handleLogin = (data) => {
     sb.setToken(data.access_token);
